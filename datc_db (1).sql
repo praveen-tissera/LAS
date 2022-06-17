@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.0.2
+-- version 5.1.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 27, 2021 at 05:29 PM
--- Server version: 10.4.11-MariaDB
--- PHP Version: 7.4.6
+-- Generation Time: Jun 17, 2022 at 06:44 AM
+-- Server version: 10.4.19-MariaDB
+-- PHP Version: 7.3.28
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -31,7 +31,7 @@ CREATE TABLE `batch_table` (
   `batch_id` int(11) NOT NULL,
   `course_id` int(11) NOT NULL,
   `staff_id` int(11) NOT NULL,
-  `batch_number` char(3) NOT NULL,
+  `batch_number` char(255) NOT NULL,
   `create_date` date NOT NULL,
   `commence_date` date NOT NULL,
   `tentitive_close_date` date NOT NULL,
@@ -47,12 +47,12 @@ CREATE TABLE `batch_table` (
 INSERT INTO `batch_table` (`batch_id`, `course_id`, `staff_id`, `batch_number`, `create_date`, `commence_date`, `tentitive_close_date`, `close_date`, `discription`, `state`) VALUES
 (1, 1, 1, '1', '2020-08-08', '2021-08-07', '0000-00-00', '2021-01-03', 'class time : Saturday 9.00 am to 3.00 pm', 'active'),
 (2, 1, 1, '2', '2020-08-09', '2021-08-08', '0000-00-00', '2021-01-03', 'class time : Sunday 9.00 am to 3.00 pm', 'active'),
-(3, 2, 1, '1', '2020-08-16', '2021-08-29', '0000-00-00', '2021-01-03', 'class time : Sunday 9.00 am to 3.00 pm', 'active'),
+(3, 2, 1, '1', '2020-08-16', '2022-07-25', '0000-00-00', '2022-11-30', 'class time : Monday 9.00 am to 3.00 pm', 'active'),
 (4, 3, 1, '1', '2020-08-08', '2021-08-07', '2021-11-19', '2021-01-03', 'class time : Saturday 9.00 am to 3.00 pm', 'complete'),
 (5, 2, 2, '2', '2020-11-26', '2020-11-26', '2021-01-27', NULL, 'test', 'active'),
-(6, 5, 2, '1', '2020-11-26', '2020-11-26', '2020-12-31', NULL, 'test batch description', 'active'),
-(7, 6, 2, '1', '2020-11-28', '2020-11-30', '2020-12-02', NULL, 'test description', 'active'),
-(8, 7, 2, '1', '2021-01-31', '2021-02-28', '2021-03-03', NULL, 'sadfsadf', 'active');
+(9, 8, 2, 'Grade 6 ICT Rasani', '2022-06-11', '2022-01-01', '2022-12-31', NULL, 'ICT Classes', 'active'),
+(10, 8, 2, 'Grade 6 Sinhala Kalum', '2022-06-11', '2022-01-01', '2022-12-31', NULL, 'Sinhala Classes', 'active'),
+(11, 8, 2, 'Grade 6 - English Chaml', '2022-06-11', '2022-01-01', '2022-12-31', NULL, 'English', 'active');
 
 -- --------------------------------------------------------
 
@@ -111,7 +111,11 @@ INSERT INTO `captcha` (`captcha_id`, `captcha_time`, `ip_address`, `word`) VALUE
 (62, 1613877589, '::1', '4oEfN79f'),
 (63, 1613877668, '::1', 'P5abV6K5'),
 (64, 1613918661, '::1', 'NvYCyGJN'),
-(65, 1614436404, '::1', 'fvFaCu8H');
+(65, 1614436404, '::1', 'fvFaCu8H'),
+(66, 1649838772, '::1', 'luWEMVH5'),
+(67, 1651368748, '::1', 'I5dTPTLm'),
+(68, 1651387559, '::1', 'ja9zDLdP'),
+(69, 1651388866, '::1', '6vt9b9Zm');
 
 -- --------------------------------------------------------
 
@@ -135,12 +139,10 @@ CREATE TABLE `course_table` (
 --
 
 INSERT INTO `course_table` (`course_id`, `course_name`, `course_description`, `course_fee`, `state`, `staff_id`, `course_type`, `submit_date`) VALUES
-(1, 'Diploma of Agribusiness management ', 'This qualification reflects the role of personnel working on farms, stations and related rural businesses involved in administering and managing those businesses. Industry expects individuals with this qualification to take personal responsibility and exercise autonomy in undertaking complex work. They must analyze information and exercise judgment to complete a range of advanced skilled activities.', '30000.00', 'active', 2, 'diploma', '2020-01-01'),
-(2, 'Diploma Of Horticulture ', 'The Diploma of Horticulture reflects the role of those who manage amenity horticultural enterprises where a range of skills and knowledge across the breadth of the industry is required or personnel working in horticulture at a level requiring higher technical skills.', '25000.00', 'active', 2, 'diploma', '2020-01-02'),
+(1, 'Diploma of Web Development', 'This qualification reflects the role of personnel working on farms, stations and related rural businesses involved in administering and managing those businesses. Industry expects individuals with this qualification to take personal responsibility and exercise autonomy in undertaking complex work. They must analyze information and exercise judgment to complete a range of advanced skilled activities.', '30000.00', 'active', 2, 'diploma', '2020-01-01'),
+(2, 'Diploma in Software Engineering', 'The Diploma of Horticulture reflects the role of those who manage amenity horticultural enterprises where a range of skills and knowledge across the breadth of the industry is required or personnel working in horticulture at a level requiring higher technical skills.', '25000.00', 'active', 2, 'diploma', '2020-01-02'),
 (3, 'One Day Training', 'The Diploma of Horticulture reflects the role of those who manage amenity horticultural enterprises where a range of skills and knowledge across the breadth of the industry is required or personnel working in horticulture at a level requiring higher technical skills.', '25000.00', 'active', 2, 'oneday', '2020-01-02'),
-(5, 'test courseon', 'test discript', '40000', 'active', 2, 'diploma', '2020-11-26'),
-(6, 'three days course', 'test', '25000', 'active', 2, 'threedays', '2020-11-28'),
-(7, 'abc', 'aaldfjlasjf', '50000', 'active', 2, 'threedays', '2021-01-31');
+(8, 'Grade 6', 'grade 6', '1000', 'active', 2, 'oneday', '2022-06-11');
 
 -- --------------------------------------------------------
 
@@ -149,6 +151,7 @@ INSERT INTO `course_table` (`course_id`, `course_name`, `course_description`, `c
 --
 
 CREATE TABLE `payment_receive_table` (
+  `id` int(11) NOT NULL,
   `payment_id` int(11) NOT NULL,
   `receipt_number` varchar(14) NOT NULL,
   `paid_amount` float NOT NULL,
@@ -161,20 +164,24 @@ CREATE TABLE `payment_receive_table` (
 -- Dumping data for table `payment_receive_table`
 --
 
-INSERT INTO `payment_receive_table` (`payment_id`, `receipt_number`, `paid_amount`, `paid_date`, `staff_id`, `add_date`) VALUES
-(27, '20201119154516', 15000, '2020-11-19', 2, '2020-11-19'),
-(46, '20201121045937', 15000, '2020-11-21', 2, '2020-11-21'),
-(48, '20201124123716', 25000, '2020-11-24', 2, '2020-11-24'),
-(47, '20201124181924', 15000, '2020-11-24', 2, '2020-11-24'),
-(49, '20201128094722', 25000, '2020-11-28', 2, '2020-11-28'),
-(50, '20210113072936', 30000, '2021-01-13', 2, '2021-01-13'),
-(51, '20210129044440', 15000, '2021-01-29', 2, '2021-01-29'),
-(53, '20210129050927', 30000, '2021-01-29', 2, '2021-01-29'),
-(54, '20210131155728', 30000, '2021-01-31', 2, '2021-01-31'),
-(55, '20210131155917', 15000, '2021-01-31', 2, '2021-01-31'),
-(57, '20210131160443', 25000, '2021-01-31', 2, '2021-01-31'),
-(28, '20210216180839', 15000, '2021-02-16', 2, '2021-02-16'),
-(58, '20210216181759', 25000, '2021-02-16', 2, '2021-02-16');
+INSERT INTO `payment_receive_table` (`id`, `payment_id`, `receipt_number`, `paid_amount`, `paid_date`, `staff_id`, `add_date`) VALUES
+(1, 27, '20201119154516', 15000, '2020-11-19', 2, '2020-11-19'),
+(2, 46, '20201121045937', 15000, '2020-11-21', 2, '2020-11-21'),
+(3, 48, '20201124123716', 25000, '2020-11-24', 2, '2020-11-24'),
+(4, 47, '20201124181924', 15000, '2020-11-24', 2, '2020-11-24'),
+(5, 50, '20210113072936', 30000, '2021-01-13', 2, '2021-01-13'),
+(6, 51, '20210129044440', 15000, '2021-01-29', 2, '2021-01-29'),
+(7, 53, '20210129050927', 30000, '2021-01-29', 2, '2021-01-29'),
+(8, 54, '20210131155728', 30000, '2021-01-31', 2, '2021-01-31'),
+(9, 55, '20210131155917', 15000, '2021-01-31', 2, '2021-01-31'),
+(10, 57, '20210131160443', 25000, '2021-01-31', 2, '2021-01-31'),
+(11, 28, '20210216180839', 15000, '2021-02-16', 2, '2021-02-16'),
+(12, 58, '20210216181759', 25000, '2021-02-16', 2, '2021-02-16'),
+(13, 59, '20220501111658', 30000, '2022-05-01', 2, '2022-05-01'),
+(14, 60, '20220611064506', 1000, '2022-06-11', 2, '2022-06-11'),
+(15, 61, '20220611064506', 1000, '2022-06-11', 2, '2022-06-11'),
+(16, 62, '20220616064506', 1000, '2022-06-16', 2, '2022-06-16'),
+(17, 63, '20220616064506', 1000, '2022-06-16', 2, '2022-06-16');
 
 -- --------------------------------------------------------
 
@@ -189,6 +196,7 @@ CREATE TABLE `payment_schedule_table` (
   `payment_status` enum('full','1st installment','2nd installment') NOT NULL,
   `amount` float NOT NULL,
   `payment_due_date` date DEFAULT NULL,
+  `pay_month` varchar(255) NOT NULL,
   `added_date` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -196,22 +204,26 @@ CREATE TABLE `payment_schedule_table` (
 -- Dumping data for table `payment_schedule_table`
 --
 
-INSERT INTO `payment_schedule_table` (`payment_id`, `student_id`, `batch_id`, `payment_status`, `amount`, `payment_due_date`, `added_date`) VALUES
-(27, 17, 2, '1st installment', 15000, NULL, '2020-11-19'),
-(28, 17, 2, '2nd installment', 15000, '2022-02-08', '2020-11-19'),
-(46, 37, 2, '1st installment', 15000, NULL, '2020-11-21'),
-(47, 37, 2, '2nd installment', 15000, '2022-02-08', '2020-11-21'),
-(48, 38, 4, 'full', 25000, NULL, '2020-11-24'),
-(49, 39, 7, 'full', 25000, NULL, '2020-11-28'),
-(50, 1, 1, 'full', 30000, NULL, '2021-01-13'),
-(51, 18, 1, '1st installment', 15000, NULL, '2021-01-29'),
-(52, 18, 1, '2nd installment', 15000, '2021-01-27', '2021-01-29'),
-(53, 40, 1, 'full', 30000, NULL, '2021-01-29'),
-(54, 41, 1, 'full', 30000, NULL, '2021-01-31'),
-(55, 42, 1, '1st installment', 15000, NULL, '2021-01-31'),
-(56, 42, 1, '2nd installment', 15000, '2022-02-07', '2021-01-31'),
-(57, 42, 3, 'full', 25000, NULL, '2021-01-31'),
-(58, 41, 4, 'full', 25000, NULL, '2021-02-16');
+INSERT INTO `payment_schedule_table` (`payment_id`, `student_id`, `batch_id`, `payment_status`, `amount`, `payment_due_date`, `pay_month`, `added_date`) VALUES
+(27, 17, 2, '1st installment', 15000, NULL, '', '2020-11-19'),
+(28, 17, 2, '2nd installment', 15000, '2022-02-08', '', '2020-11-19'),
+(46, 37, 2, '1st installment', 15000, NULL, '', '2020-11-21'),
+(47, 37, 2, '2nd installment', 15000, '2022-02-08', '', '2020-11-21'),
+(48, 38, 4, 'full', 25000, NULL, '', '2020-11-24'),
+(50, 1, 1, 'full', 30000, NULL, '', '2021-01-13'),
+(51, 18, 1, '1st installment', 15000, NULL, '', '2021-01-29'),
+(52, 18, 1, '2nd installment', 15000, '2021-01-27', '', '2021-01-29'),
+(53, 40, 1, 'full', 30000, NULL, '', '2021-01-29'),
+(54, 41, 1, 'full', 30000, NULL, '', '2021-01-31'),
+(55, 42, 1, '1st installment', 15000, NULL, '', '2021-01-31'),
+(56, 42, 1, '2nd installment', 15000, '2022-02-07', '', '2021-01-31'),
+(57, 42, 3, 'full', 25000, NULL, '', '2021-01-31'),
+(58, 41, 4, 'full', 25000, NULL, '', '2021-02-16'),
+(59, 45, 1, 'full', 30000, NULL, '', '2022-05-01'),
+(60, 46, 9, 'full', 1000, NULL, 'January', '2022-06-11'),
+(61, 46, 11, 'full', 1000, NULL, 'January', '2022-06-11'),
+(62, 46, 9, 'full', 1000, NULL, 'February', '2022-06-16'),
+(63, 46, 11, 'full', 1000, NULL, 'February', '2022-06-16');
 
 -- --------------------------------------------------------
 
@@ -355,14 +367,16 @@ INSERT INTO `student_batch_map_table` (`student_id`, `batch_id`, `staff_id`, `ad
 (18, 1, 3, '2020-08-10', 'active', NULL),
 (37, 2, 2, '2020-11-21', 'active', NULL),
 (38, 4, 2, '2020-11-24', 'active', '22222221'),
-(39, 7, 2, '2020-11-28', 'active', NULL),
 (40, 1, 3, '2021-01-29', 'active', NULL),
 (41, 1, 3, '2021-01-31', 'active', NULL),
 (42, 1, 3, '2021-01-31', 'suspend', NULL),
 (42, 3, 2, '2021-01-31', 'active', NULL),
 (43, 1, 3, '2021-01-31', 'pending', NULL),
 (44, 1, 3, '2021-01-31', 'active', NULL),
-(41, 4, 2, '2021-02-16', 'active', '4444444411');
+(41, 4, 2, '2021-02-16', 'active', '4444444411'),
+(45, 1, 2, '2022-05-01', 'active', NULL),
+(46, 9, 2, '2022-06-11', 'active', NULL),
+(46, 11, 2, '2022-06-11', 'active', NULL);
 
 -- --------------------------------------------------------
 
@@ -432,14 +446,16 @@ INSERT INTO `student_table` (`student_id`, `first_name`, `last_name`, `birth_dat
 (1, 'chinthan', 'pereraa', '1998-06-04', 'chinthan@gmail.com', '+94764354111', '6367c48dd193d56ea7b0baad25b19455e529f5ee', 1, 'active', '2020-08-01'),
 (17, 'praveen', 'tissera', '1985-08-03', 'praveen@gmail.com', '+94764354111', '6367c48dd193d56ea7b0baad25b19455e529f5ee', 3, 'active', '2020-08-03'),
 (18, 'lalitha', 'caldera', '2002-02-04', 'lalitha@gmail.com', '0712345644', '6367c48dd193d56ea7b0baad25b19455e529f5ee', 3, 'active', '2020-08-10'),
-(37, 'roshi', 'fernando', '2013-12-31', 'roshi@gmail.com', '+94764354111', '13ef57bf287aadea333199529c11519af8fe4ef7', 2, 'active', '2020-11-21'),
+(37, 'roshi', 'fernando', '2013-12-31', 'roshi@gmail.com', '+94764354111', '6367c48dd193d56ea7b0baad25b19455e529f5ee', 2, 'active', '2020-11-21'),
 (38, 'sampa', 'withanachchi', '2005-10-24', 'samparasanie@gmail.com', '12345678', 'd85c89bf4e2cf42fe4cb367394aa81e7479ec41c', 2, 'active', '2020-11-24'),
 (39, '', '', '0000-00-00', '', '', 'da39a3ee5e6b4b0d3255bfef95601890afd80709', 2, 'active', '2020-11-28'),
 (40, 'kavi', 'perera', '2000-01-01', 'kavi@gmail.com', '12345678', '6367c48dd193d56ea7b0baad25b19455e529f5ee', 3, 'active', '2021-01-29'),
 (41, 'kasun', 'manchanayaka', '2011-05-09', 'kasun@gmail.com', '12345678', '6367c48dd193d56ea7b0baad25b19455e529f5ee', 3, 'active', '2021-01-31'),
 (42, 'achala', 'upuldeniya', '2012-06-05', 'achala@gamail.com', '12345678', '6367c48dd193d56ea7b0baad25b19455e529f5ee', 3, 'active', '2021-01-31'),
 (43, 'asdfsa', 'sadfasdf', '2021-01-31', 'adsadfsadfasdfmin@gmail.com', '12332232', '6367c48dd193d56ea7b0baad25b19455e529f5ee', 3, 'pending', '2021-01-31'),
-(44, 'kasun', 'chamera', '2021-01-05', 'kasunchamera@gmail.com', '12345678', '6367c48dd193d56ea7b0baad25b19455e529f5ee', 3, 'active', '2021-01-31');
+(44, 'kasun', 'chamera', '2021-01-05', 'kasunchamera@gmail.com', '12345678', '6367c48dd193d56ea7b0baad25b19455e529f5ee', 3, 'active', '2021-01-31'),
+(45, 'kalpani', 'perera', '1994-02-24', 'kalpaniee@gmail.com', '333333333333', '4a7dc2d1bb3720cf793b8b0fa5dfb607575553dd', 2, 'active', '2022-05-01'),
+(46, 'aaaaaa', 'dddddddddd', '2022-06-07', 'kumaraaaaaaa@gmail.com', '22222222222222', '7ec8aa461c2c28be905e1dfb0be256a971aa6108', 2, 'active', '2022-06-11');
 
 -- --------------------------------------------------------
 
@@ -527,9 +543,6 @@ INSERT INTO `trainer_batch_map_table` (`trainer_id`, `batch_id`, `staff_id`, `ad
 (2, 1, 2, '2021-02-18', 'active'),
 (1, 5, 2, '2021-02-18', 'active'),
 (2, 5, 2, '2021-02-18', 'deactivate'),
-(2, 6, 2, '2021-02-18', 'active'),
-(2, 8, 2, '2021-02-18', 'deactivate'),
-(1, 8, 2, '2021-02-18', 'active'),
 (2, 1, 1, '2021-02-24', 'deactivate');
 
 -- --------------------------------------------------------
@@ -557,7 +570,8 @@ INSERT INTO `trainer_table` (`trainer_id`, `first_name`, `last_name`, `birth_dat
 (1, 'traineraa', 'trainerb', '1987-08-26', 'trainer@gmail.com', '6367c48dd193d56ea7b0baad25b19455e529f5ee', 'active', '2020-08-01'),
 (2, 'praveen', 'tissera', '1981-11-30', 'praveen@gmail.com', '6367c48dd193d56ea7b0baad25b19455e529f5ee', 'active', '2020-11-24'),
 (3, 'Dammika', 'Bandara', '1980-01-15', 'dammika@hotmail.com', '6367c48dd193d56ea7b0baad25b19455e529f5ee', 'active', '2021-02-24'),
-(4, 'yonali', 'perera', '2019-06-02', 'yonali@gmail.com', '6367c48dd193d56ea7b0baad25b19455e529f5ee', 'active', '2021-02-25');
+(4, 'yonali', 'perera', '2019-06-02', 'yonali@gmail.com', '6367c48dd193d56ea7b0baad25b19455e529f5ee', 'active', '2021-02-25'),
+(5, 'nuwan', 'kumara', '1995-02-03', 'kuma123@gmail.com', 'd194e9be0e48215e8407b159b0a67c68b36ee4ca', 'active', '2022-05-01');
 
 --
 -- Indexes for dumped tables
@@ -589,6 +603,7 @@ ALTER TABLE `course_table`
 -- Indexes for table `payment_receive_table`
 --
 ALTER TABLE `payment_receive_table`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `payment_id` (`payment_id`),
   ADD KEY `staff_id` (`staff_id`);
 
@@ -677,25 +692,31 @@ ALTER TABLE `trainer_table`
 -- AUTO_INCREMENT for table `batch_table`
 --
 ALTER TABLE `batch_table`
-  MODIFY `batch_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `batch_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `captcha`
 --
 ALTER TABLE `captcha`
-  MODIFY `captcha_id` bigint(13) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
+  MODIFY `captcha_id` bigint(13) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
 
 --
 -- AUTO_INCREMENT for table `course_table`
 --
 ALTER TABLE `course_table`
-  MODIFY `course_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `course_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `payment_receive_table`
+--
+ALTER TABLE `payment_receive_table`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `payment_schedule_table`
 --
 ALTER TABLE `payment_schedule_table`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
 
 --
 -- AUTO_INCREMENT for table `staff_table`
@@ -713,7 +734,7 @@ ALTER TABLE `student_attendance_table`
 -- AUTO_INCREMENT for table `student_table`
 --
 ALTER TABLE `student_table`
-  MODIFY `student_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `student_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT for table `subject_table`
@@ -731,7 +752,7 @@ ALTER TABLE `trainer_attendance_table`
 -- AUTO_INCREMENT for table `trainer_table`
 --
 ALTER TABLE `trainer_table`
-  MODIFY `trainer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `trainer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables
