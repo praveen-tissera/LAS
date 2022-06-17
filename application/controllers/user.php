@@ -1059,6 +1059,7 @@ class User extends CI_Controller
 		$courses = array();
 		$course_detail = array();
 		$data['history'] = $this->user_model->student_wise_batches_course($studentId);
+		// print_r($data['history']);
 
 		if ($step == 1) {
 			$data['select_course'] = $this->user_model->read_active_course_byid($courseId);
@@ -1069,25 +1070,52 @@ class User extends CI_Controller
 			// echo '</pre>';
 			$data['studentId'] = $studentId;
 			$data['courseId'] = $courseId;
+
+			// print_r($data);
+			foreach ($data['history'] as $key => $batch) {
+				// print_r($batch->batch_object);
+				if(!in_array($batch->batch_object->course_id, $courses)){
+					// print_r($batch->batch_object );
+					array_push($courses,	$batch->batch_object->course_id );
+					array_push($course_detail,	$batch);
+					// array_push($course_detail,	$batch );
+	
+				}
+	
+	
+	
+			 }
+			 $data['courses'] = $course_detail;
+			 $this->load->view('payfee-view', $data);
 		}
+		if($step == 2){
+// print_r($_POST);
 
-		// print_r($data);
-		 foreach ($data['history'] as $key => $batch) {
-			// print_r($batch->batch_object);
-			if(!in_array($batch->batch_object->course_id, $courses)){
-				// print_r($batch->batch_object );
-				array_push($courses,	$batch->batch_object->course_id );
-				array_push($course_detail,	$batch);
-				// array_push($course_detail,	$batch );
+if(isset($_POST['class-fee'])){
+	$institute_fee =	$this->input->post('class-fee');
+}else{
+	$institute_fee  = 0;
+}
+$payment_detail = array(
+	'staff_id' => $this->session->userdata('user_detail')['user_id'],
+	'payment_mode' =>'full',
+	'pay_type' => 1,
+	'fullpayment' => $this->input->post('course-fee'),
+	'installmentone' => null,
+	'installmenttwo' => null,
+	'due-date' => null,
+	'month'=>$this->input->post('selected-month')
+);
+// print_r($institute_fee);
 
-			}
+$batch_ids = $this->input->post('completed');
+$this->user_model-> add_fees($studentId,$batch_ids,$payment_detail, $institute_fee);
+redirect('/user/feeManage/'.$studentId.'/'.$courseId.'/1');
+		}
+	
+		
 
-
-
-		 }
-		 $data['courses'] = $course_detail;
-
-		$this->load->view('payfee-view', $data);
+		
 		// print_r($course_detail);
 		/**
 		 * step one -  select course

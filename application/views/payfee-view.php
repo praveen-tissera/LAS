@@ -74,7 +74,7 @@ if (!($this->session->userdata('user_detail'))) {
 
           foreach ($history as $key => $batch) {
             echo '<h5>'. $batch->batch_object->batch_number . '<h5>';
-            echo "<input type='text' id='{$batch->batch_object->batch_id}' value='{$batch->batch_object->course_detail->course_fee}'>";
+            echo "<input type='text' name='course-fee' value='{$batch->batch_object->course_detail->course_fee}'>";
            
             echo "<table class='table'>";
               echo "<tr>";
@@ -106,7 +106,7 @@ if (!($this->session->userdata('user_detail'))) {
           <?php 
           if(isset($all_batches)){
             $month_array = ['January','February','March','April','June','July','August','September','Octmber','November','December'];
-            echo "<select name='selected_course' class='form-control'>";
+            echo "<select name='selected-month' class='form-control'>";
           
             foreach ($month_array as $key_course => $month) {
               // print_r($course);
@@ -118,14 +118,14 @@ if (!($this->session->userdata('user_detail'))) {
             foreach ($all_batches as $key_batch => $batch) {
               // print_r($course);
               $batchid = 20;
-              $js = 'onClick="feeCalculation(' . $select_course[0]->course_fee .')"';
+              $js = 'onClick="feeCalculation(' . $select_course[0]->course_fee .',this)"';
               echo form_checkbox('completed[]',$batch->batch_id, FALSE,$js);
               // echo "<input type='checkbox' value='{$batch->batch_id}'>";
               echo "<label>" . $batch->batch_number. " (commence date: " . $batch->commence_date . ") </label>";
              echo "<br>";
             }
-            $js = 'onClick="feeCalculation(100)"';
-            echo form_checkbox('completed[]',$batch->batch_id, FALSE,$js);
+            $js = 'onClick="feeCalculation(100, this)"';
+            echo form_checkbox('class-fee',100, FALSE,$js);
               
               echo "<label>" . 'Institute Fee'. " </label>";
             echo '
@@ -163,9 +163,16 @@ if (!($this->session->userdata('user_detail'))) {
 <?php $this->load->view('footer'); ?>
 <script>
    var classFee = 0;
-    function feeCalculation(amount){
-      classFee = classFee + amount;
+    function feeCalculation(amount,event){
+      console.log(event.checked);
+      if(event.checked){
+        classFee = classFee + amount;
       $('#totalFee').val(classFee);
+      }else{
+        classFee = classFee - amount;
+      $('#totalFee').val(classFee);
+      }
+     
     }
   $(document).ready(function(){
    

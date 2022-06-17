@@ -1449,4 +1449,144 @@ public function read_student_detail_to_batch($student_id,$batch_id){
             }
         
     }
+
+    public function add_fees($student_id,$batch_ids,$payment_detail, $institute_fee){
+        $this->db->trans_commit();
+        foreach ( $batch_ids as $key => $value) {
+            $data_course_batch['batch_id'] = $value;
+            $data_payment = array(
+                'student-id' =>$student_id,
+                'batch-id' => $value,
+                'fullpayment' => $payment_detail['fullpayment'],
+                'pay_type' => $payment_detail['pay_type'],
+                'installment-two-date'=> $payment_detail['due-date'],
+                'installment-one' => $payment_detail['installmentone'],
+                'installment-two' => $payment_detail['installmenttwo'],
+                'institute_fee' => 0,
+                'month'=>$payment_detail['month']
+
+
+            );
+            print_r($data_payment);
+             //  call payment handle method which use to do online register student payments.
+         $payment_output = $this->add_student_payment($data_payment,$payment_detail['staff_id']);
+        }  
+        if($institute_fee > 0){
+            $data_payment = array(
+                'student-id' =>$student_id,
+                'batch-id' => 9,
+                'fullpayment' => $institute_fee,
+                'pay_type' => $payment_detail['pay_type'],
+                'installment-two-date'=> $payment_detail['due-date'],
+                'installment-one' => $payment_detail['installmentone'],
+                'installment-two' => $payment_detail['installmenttwo'],
+                'institute_fee' => 1,
+                'month'=>$payment_detail['month']
+
+
+            );
+        }
+        $payment_output = $this->add_student_payment($data_payment,$payment_detail['staff_id']);
+       
+    }
+
+    public function add_student_payment($data,$staff_id){
+        // echo "<hr>";
+        // print_r($data);
+        // print_r($staff_id);
+
+
+        if($data['pay_type'] == 1){
+            // full payment
+             print_r($data);
+   if($data['institute_fee']> 0){
+    $data = array(
+        'student_id' => $data['student-id'],
+        'batch_id' => $data['batch-id'],
+        'payment_status' => 'full',
+        'amount' =>$data['institute_fee'],
+        'institute_fee' => 1,
+        'payment_due_date' => NuLL,
+        'pay_month' => $data['month'],
+        'added_date' => Date('Y-m-d')
+        );
+   }else{
+    $data = array(
+        'student_id' => $data['student-id'],
+        'batch_id' => $data['batch-id'],
+        'payment_status' => 'full',
+        'amount' => $data['fullpayment'],
+        'institute_fee' => 0,
+        'payment_due_date' => NuLL,
+        'pay_month' => $data['month'],
+        'added_date' => Date('Y-m-d')
+        );
+   }
+           
+
+
+                $this->db->trans_begin();
+                $this->db->insert('payment_schedule_table', $data);
+                $insert_id = $this->db->insert_id();
+                if( $this->db->trans_status() === FALSE ){
+                    $this->db->trans_rollback();
+                    echo "fail";
+                    return(0);
+                }else{
+                   
+                        echo "payment scheduel works<br>";
+                        // receipt number hardcorded
+                        // print_r($data);
+                        $data_payment_receive = array(
+                        'payment_id' => $insert_id,
+                        'receipt_number' => date("YmdHis"),
+                        'paid_amount' => $data['amount'],
+                        'paid_date' => Date('Y-m-d'),
+                        'staff_id' => $staff_id,
+                        'add_date' => Date('Y-m-d')
+                        );
+                    $this->db->insert('payment_receive_table', $data_payment_receive);
+                    if( $this->db->trans_status() === FALSE ){
+                        $this->db->trans_rollback();
+                        echo "fail";
+                         return(0);
+                    }else{
+                        echo "payment receive works<br>";
+                        echo 'payment receive id' . $insert_id;
+                        
+                        $condition ="student_id =" . "'" .  $data['student_id'] . "' AND batch_id=" . "'" . $data['batch_id'] . "'";
+                        $this->db->set('state', 'active');
+                        $this->db->where($condition);
+                        
+                        $this->db->update('student_batch_map_table');
+                        if( $this->db->trans_status() === FALSE ){
+                            $this->db->trans_rollback();
+                            echo "fail";
+                             return(0);
+                        }else{
+                            echo "update student map table <br>";
+                            // set student account to active
+                        $condition ="student_id =" . "'" .  $data['student_id'] . "'";
+                        $this->db->set('state', 'active');
+                        $this->db->where($condition);
+                        
+                        $this->db->update('student_table');
+
+                            //need to pass receipt number 
+
+                            $this->db->trans_commit();
+                            echo " finally pass pass";
+                            return $data_payment_receive['receipt_number'];
+                           
+                        }   
+
+                        
+                    }
+   
+                }
+        }
+
+
+    }
+
 }

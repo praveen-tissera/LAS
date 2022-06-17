@@ -96,7 +96,7 @@ class Report extends CI_Controller
 		// print_r($data_course);
 		$result_registration = $this->course_model->map_batch_with_course($data_course);
 		if ($result_registration == 1) {
-			$data['success_message_display'] = "Bactch created successfully";
+			$data['success_message_display'] = "Batch created successfully";
 			$this->load->view('batch-registration', $data);
 		} else if ($result_registration == 'batch found') {
 			$data['error_message_display'] = "Batch number already in use";
