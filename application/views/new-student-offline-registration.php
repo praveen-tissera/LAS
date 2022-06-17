@@ -147,11 +147,22 @@ if (!($this->session->userdata('user_detail'))) {
           echo "<br>";
           foreach ($all_batches as $key_batch => $batch) {
             // print_r($course);
-            echo form_checkbox('completed[]',$batch->batch_id, FALSE);
+            $js = 'onClick="feeCalculation(' . $select_course[0]->course_fee .',this)"';
+            echo form_checkbox('completed[]',$batch->batch_id, FALSE,$js);
             // echo "<input type='checkbox' value='{$batch->batch_id}'>";
             echo "<label>" . $batch->batch_number. " (commence date: " . $batch->commence_date . ") </label>";
            echo "<br>";
           }
+          $js = 'onClick="feeCalculation(100, this)"';
+            echo form_checkbox('class-fee',100, FALSE,$js);
+              
+              echo "<label>" . 'Institute Fee'. " </label>";
+              echo '<div class="form-group">
+              <label>Total Fee</label>
+              <input type="text" class="form-control" id="totalFee" name="total-fee" readonly>
+    
+            </div>';
+           
           // echo "<select name='selected_batch' class='form-control'>";
           // foreach ($all_batches as $key_batch => $batch) {
           //   // print_r($course);
@@ -161,6 +172,7 @@ if (!($this->session->userdata('user_detail'))) {
           // }
           // echo "</select>";
         echo '</div>';
+
         if($select_course[0]->course_type == 'diploma'){
           // calculate installment and installmeent due date
           $course_fee = number_format((float)$select_course[0]->course_fee, 2, '.', '');
@@ -191,6 +203,20 @@ if (!($this->session->userdata('user_detail'))) {
         echo "</div>";
 
         }else if($select_course[0]->course_type == 'oneday' || $select_course[0]->course_type == 'threedays'){
+          $month_array = ['January','February','March','April','June','July','August','September','Octmber','November','December'];
+          echo '<div class="form-group">';
+          echo '<label>Select payment month</label>';
+          echo "<select name='selected-month' class='form-control'>";
+        
+          
+          foreach ($month_array as $key_course => $month) {
+            // print_r($course);
+            echo "<option value='{$month}'>";
+            echo $month;
+            echo "</option>";
+          }
+          echo "</select>";
+          echo '</div>';
           $course_fee = number_format((float)$select_course[0]->course_fee, 2, '.', '');
           
           $installment_one = $select_course[0]->course_fee/2;
@@ -272,6 +298,18 @@ if (!($this->session->userdata('user_detail'))) {
 
 <?php $this->load->view('footer'); ?>
 <script>
+   var classFee = 0;
+    function feeCalculation(amount,event){
+      console.log(event.checked);
+      if(event.checked){
+        classFee = classFee + amount;
+      $('#totalFee').val(classFee);
+      }else{
+        classFee = classFee - amount;
+      $('#totalFee').val(classFee);
+      }
+     
+    }
   $(document).ready(function(){
     $('#due-date').hide();
     $('#pay_mode').on('change',function(){

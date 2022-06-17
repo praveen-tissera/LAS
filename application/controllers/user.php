@@ -980,6 +980,11 @@ class User extends CI_Controller
 			$this->load->view('new-student-offline-registration', $data);
 		}
 		if ($step == '3') {
+			if(isset($_POST['class-fee'])){
+				$institute_fee =	$this->input->post('class-fee');
+			}else{
+				$institute_fee  = 0;
+			}
 			// submission
 			// print_r($_POST);
 			// Array ( [course-id] => 1 [selected_batch] => 2 [payment_mode] => full [due-date] => 2022-02-08 [firstname] => roshi [lastname] => fernando [bdate] => 2007-06-05 [email] => roshi@gmail.com [telephone] => 1234567 [password] => 71160457V )
@@ -1026,10 +1031,11 @@ class User extends CI_Controller
 					'fullpayment' => $this->input->post('fullpayment'),
 					'installmentone' => $this->input->post('installmentone'),
 					'installmenttwo' => $this->input->post('installmenttwo'),
-					'due-date' => $this->input->post('due-date')
+					'due-date' => $this->input->post('due-date'),
+					'month'=>$this->input->post('selected-month')
 				);
 				print_r($data_course_batch);
-				$registration_details = $this->user_model->register_student_offiline($data_student, $data_course_batch, $payment_detail);
+				$registration_details = $this->user_model->register_student_offiline($data_student, $data_course_batch, $payment_detail,$institute_fee);
 
 				if ($registration_details == 'email found') {
 					$data['error_message_display'] = "Student Registration fail. User with the same email exist!";
@@ -1054,12 +1060,44 @@ class User extends CI_Controller
 	 */
 
 	public function feeManage($studentId, $courseId=0, $step = 0)
-	{
-	
+	{$success = $this->session->flashdata('success_message_display');
+		// $student_details = $this->session->flashdata('student_details');
+		$error = $this->session->flashdata('error_message_display');
+		 if (!empty($success)) {
+			$data['success_message_display'] = $success;
+		}
+		if (!empty($error)) {
+			$data['error_message_display'] = $error;
+		}
+
+
 		$courses = array();
-		$course_detail = array();
-		$data['history'] = $this->user_model->student_wise_batches_course($studentId);
-		// print_r($data['history']);
+			$course_detail = array();
+			$data['history'] = $this->user_model->student_wise_batches_course($studentId);
+			$data['history_institutefee'] = $this->user_model->student_institution_payment_history($studentId);
+			
+		if($step == 0){
+			
+			
+			foreach ($data['history'] as $key => $batch) {
+				// print_r($batch->batch_object);
+				if(!in_array($batch->batch_object->course_id, $courses)){
+					// print_r($batch->batch_object );
+					array_push($courses,	$batch->batch_object->course_id );
+					array_push($course_detail,	$batch);
+					// array_push($course_detail,	$batch );
+	
+				}
+	
+	
+	
+			 }
+			 $data['courses'] = $course_detail;
+			// $this->load->view('payfee-view', $data);
+			print_r($data);
+		}
+	
+	
 
 		if ($step == 1) {
 			$data['select_course'] = $this->user_model->read_active_course_byid($courseId);
@@ -1086,33 +1124,36 @@ class User extends CI_Controller
 	
 			 }
 			 $data['courses'] = $course_detail;
-			 $this->load->view('payfee-view', $data);
+			//  $this->load->view('payfee-view', $data);
 		}
 		if($step == 2){
-// print_r($_POST);
+				// print_r($_POST);
 
-if(isset($_POST['class-fee'])){
-	$institute_fee =	$this->input->post('class-fee');
-}else{
-	$institute_fee  = 0;
-}
-$payment_detail = array(
-	'staff_id' => $this->session->userdata('user_detail')['user_id'],
-	'payment_mode' =>'full',
-	'pay_type' => 1,
-	'fullpayment' => $this->input->post('course-fee'),
-	'installmentone' => null,
-	'installmenttwo' => null,
-	'due-date' => null,
-	'month'=>$this->input->post('selected-month')
-);
-// print_r($institute_fee);
+				if(isset($_POST['class-fee'])){
+					$institute_fee =	$this->input->post('class-fee');
+				}else{
+					$institute_fee  = 0;
+				}
+				$payment_detail = array(
+					'staff_id' => $this->session->userdata('user_detail')['user_id'],
+					'payment_mode' =>'full',
+					'pay_type' => 1,
+					'fullpayment' => $this->input->post('course-fee'),
+					'installmentone' => null,
+					'installmenttwo' => null,
+					'due-date' => null,
+					'month'=>$this->input->post('selected-month')
+				);
+				// print_r($institute_fee);
 
-$batch_ids = $this->input->post('completed');
-$this->user_model-> add_fees($studentId,$batch_ids,$payment_detail, $institute_fee);
-redirect('/user/feeManage/'.$studentId.'/'.$courseId.'/1');
+				$batch_ids = $this->input->post('completed');
+				$this->user_model-> add_fees($studentId,$batch_ids,$payment_detail, $institute_fee);
+
+				$this->session->set_flashdata('success_message_display', 'Payment added successfully');
+			
+				redirect('/user/feeManage/'.$studentId.'/'.$courseId.'/1');
 		}
-	
+		$this->load->view('payfee-view', $data);
 		
 
 		

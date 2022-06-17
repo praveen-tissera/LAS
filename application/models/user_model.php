@@ -511,14 +511,30 @@ public function read_student_detail_to_batch($student_id,$batch_id){
              print_r($data);
             // Array ( [student-id] => 1 [batch-id] => 1 [course-id] => 1 [firstname] => chinthana [lastname] => perera [bdate] => 1997-08-04 [email] => chinthan@gmail.com [telephone] => [pay_type] => 1 [fullpayment] => 30000.00 [installment-one] => 15000.00 [installment-two] => 15000.00 [installment-two-date] => 2022-11-15 )
             // INSERT INTO `payment_schedule_table` (`payment_id`, `student_id`, `batch_id`, `payment_status`, `amount`, `payment_due_date`, `added_date`) VALUES (NULL, '1', '1', 'full', '30000', '2020-10-13', '2020-10-13');
-            $data = array(
-                'student_id' => $data['student-id'],
-				'batch_id' => $data['batch-id'],
-				'payment_status' => 'full',
-				'amount' => $data['fullpayment'],
-                'payment_due_date' => NuLL,
-                'added_date' => Date('Y-m-d')
-                );
+            if($data['institute_fee']> 0){
+                $data = array(
+                    'student_id' => $data['student-id'],
+                    'batch_id' => $data['batch-id'],
+                    'payment_status' => 'full',
+                    'amount' => $data['fullpayment'],
+                    'institute_fee' => 1,
+                    'payment_due_date' => NuLL,
+                    'pay_month' => $data['month'],
+                    'added_date' => Date('Y-m-d')
+                    );
+            }else {
+                $data = array(
+                    'student_id' => $data['student-id'],
+                    'batch_id' => $data['batch-id'],
+                    'payment_status' => 'full',
+                    'amount' => $data['fullpayment'],
+                    'institute_fee' => 0,
+                    'payment_due_date' => NuLL,
+                    'pay_month' => $data['month'],
+                    'added_date' => Date('Y-m-d')
+                    );
+            }
+           
                 $this->db->trans_begin();
                 $this->db->insert('payment_schedule_table', $data);
                 $insert_id = $this->db->insert_id();
@@ -675,7 +691,7 @@ public function read_student_detail_to_batch($student_id,$batch_id){
 
 
     }
-    public function register_student_offiline($data_student,$data_course_batch,$payment_detail){
+    public function register_student_offiline($data_student,$data_course_batch,$payment_detail,$institute_fee){
         echo "<br>";
         // print_r($data_course_batch);
          // Query to check whether username already exist or not
@@ -732,12 +748,31 @@ public function read_student_detail_to_batch($student_id,$batch_id){
                             'pay_type' => $payment_detail['pay_type'],
                             'installment-two-date'=> $payment_detail['due-date'],
                             'installment-one' => $payment_detail['installmentone'],
-                            'installment-two' => $payment_detail['installmenttwo']
+                            'installment-two' => $payment_detail['installmenttwo'],
+                            'institute_fee' => 0,
+                            'month'=>$payment_detail['month']
    
    
                         );
                          //  call payment handle method which use to do online register student payments.
                      $payment_output = $this->update_student_payment($data_payment,$data_course_batch['staff_id']);
+
+                     if($institute_fee > 0){
+                        $data_payment = array(
+                            'student-id' =>$insert_id,
+                            'batch-id' => 9,
+                            'fullpayment' => $institute_fee,
+                            'pay_type' => $payment_detail['pay_type'],
+                            'installment-two-date'=> $payment_detail['due-date'],
+                            'installment-one' => $payment_detail['installmentone'],
+                            'installment-two' => $payment_detail['installmenttwo'],
+                            'institute_fee' => 1,
+                            'month'=>$payment_detail['month']
+            
+            
+                        );
+                        $payment_output = $this->update_student_payment($data_payment,$data_course_batch['staff_id']);
+                    }
                     }    
                      
                    
@@ -1025,6 +1060,29 @@ public function read_student_detail_to_batch($student_id,$batch_id){
         }
     }
 
+    /**
+     * collect student institute payment monthly
+     * 
+     */
+    public function student_institution_payment_history($studentid){
+        $condition = "student_id = " . "'" . $studentid . "' && batch_id = " . "'" . 9 . "'";
+        $this->db->select('*');
+        $this->db->from('payment_schedule_table');
+        $this->db->where($condition);
+        $this->db->order_by("added_date", "desc");
+        // $this->db->limit(1);
+        $query = $this->db->get();
+        if($query->num_rows() > 0){
+            $payments = $query->result();
+            foreach ($payments as $key => $payment) {
+               $payments[$key]->payment_receive =  $this->payment_receive($payment->payment_id);
+            }
+            
+            return $payments;
+        }else{
+            return false;
+        }
+    }
     /**
      * add 2nd installment only
      */
@@ -1452,7 +1510,31 @@ public function read_student_detail_to_batch($student_id,$batch_id){
 
     public function add_fees($student_id,$batch_ids,$payment_detail, $institute_fee){
         $this->db->trans_commit();
+        // print_r($batch_ids);
         foreach ( $batch_ids as $key => $value) {
+
+
+            $condition = "student_id =" . "'" . $student_id . "' AND batch_id =" . "'" . $value . "'";
+            $this->db->select('*');
+            $this->db->from('student_batch_map_table');
+            $this->db->where($condition);
+            $this->db->limit(1);
+            $query = $this->db->get();
+           
+            if ($query->num_rows() == 0) {
+            $data_course_batch = array(
+                'student_id'=> $student_id,
+                'batch_id' => $value,
+					'staff_id' => $this->session->userdata('user_detail')['user_id'],
+					'added_date' => Date('Y-m-d'),
+					'state' => 'active',
+					'certificate_no' => NuLL
+            );
+            $this->db->insert('student_batch_map_table', $data_course_batch);
+            // echo $this->db->last_query();
+            }
+            
+
             $data_course_batch['batch_id'] = $value;
             $data_payment = array(
                 'student-id' =>$student_id,
@@ -1504,7 +1586,7 @@ public function read_student_detail_to_batch($student_id,$batch_id){
         'student_id' => $data['student-id'],
         'batch_id' => $data['batch-id'],
         'payment_status' => 'full',
-        'amount' =>$data['institute_fee'],
+        'amount' =>$data['fullpayment'],
         'institute_fee' => 1,
         'payment_due_date' => NuLL,
         'pay_month' => $data['month'],

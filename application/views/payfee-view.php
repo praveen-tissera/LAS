@@ -52,62 +52,120 @@ if (!($this->session->userdata('user_detail'))) {
     
     ?>
     <div class="row">
+  
+    <div class="col-12">
+    
     <?php 
     if(isset($all_batches)){
       echo form_open("user/feeManage/{$studentId}/{$courseId}/2"); 
     }
    
     ?>
-    <div class="col-12">
-    <h2>Student Search</h2>
     <div class="form-row">
       
         <div class="form-group col-md-12">
           
           <?php 
           // print_r($history);
-        
-  foreach ($courses as $key => $course) {
-    // print_r($course);
-    echo "<a href='". base_url('user/feeManage'). "/{$course->student_id}/{$course->batch_object->course_id}/1' class='btn btn-warning'>Pay Now ({$course->batch_object->course_detail->course_name})</a>";
-  }
-
-          foreach ($history as $key => $batch) {
-            echo '<h5>'. $batch->batch_object->batch_number . '<h5>';
-            echo "<input type='text' name='course-fee' value='{$batch->batch_object->course_detail->course_fee}'>";
-           
-            echo "<table class='table'>";
-              echo "<tr>";
-                echo "<th>Month</th><th>Receipt Number</th><th>Paid Amount</th><th>Paid Date</th>";
-              echo "</tr>";
-
-              foreach ($batch->payment_object as $key => $payment) {
-                echo "<tr>";
-                  echo "<td>";
-                    echo $payment->pay_month;
-                  echo "</td>";
-                
-                  echo "<td>";
-                    echo $payment->payment_receive->receipt_number;
-                    // print_r($payment->payment_receive);
-                  echo "</td>";
-                  echo "<td>";
-                    echo $payment->payment_receive->paid_amount;
-                  echo "</td>";
-                  echo "<td>";
-                  echo $payment->payment_receive->paid_date;
-                echo "</td>";
-                echo "</tr>";
-              }
-            echo "</table>";
-
+        if(isset($courses)){
+          foreach ($courses as $key => $course) {
+            // print_r($course);
+            echo "<a href='". base_url('user/feeManage'). "/{$course->student_id}/{$course->batch_object->course_id}/1' class='btn btn-warning'>Pay Now ({$course->batch_object->course_detail->course_name})</a>";
           }
+        }
+ 
+          echo '<h4>Payement History</h4>';
+          if(isset($history)){
+            foreach ($history as $key => $batch) {
+              echo '<details>';
+              
+              echo '<summary>'. $batch->batch_object->batch_number . '</summary>';
+              echo '<p>';
+              echo "<input type='hidden' name='course-fee' value='{$batch->batch_object->course_detail->course_fee}'>";
+             
+              echo "<table class='table'>";
+                echo "<tr>";
+                  echo "<th>Month</th><th>Receipt Number</th><th>Paid Amount</th><th>Paid Date</th>";
+                echo "</tr>";
+  
+                foreach ($batch->payment_object as $key => $payment) {
+                  echo "<tr>";
+                    echo "<td>";
+                      echo $payment->pay_month;
+                    echo "</td>";
+                  
+                    echo "<td>";
+                      echo $payment->payment_receive->receipt_number;
+                      // print_r($payment->payment_receive);
+                    echo "</td>";
+                    echo "<td>";
+                      echo $payment->payment_receive->paid_amount;
+                    echo "</td>";
+                    echo "<td>";
+                    echo $payment->payment_receive->paid_date;
+                  echo "</td>";
+                  echo "</tr>";
+                }
+              echo "</table>";
+            echo '</p>';
+            echo '</details>';
+            }
+            }
+          if(isset($history_institutefee)){
+            echo '<details>';
+              
+            echo '<summary> Institute Fee Summary </summary>';
+            echo '<p>';
+            echo "<table class='table'>";
+            echo "<tr>";
+              echo "<th>Year</th><th>Month</th><th>Receipt Number</th><th>Paid Amount</th><th>Paid Date</th>";
+            echo "</tr>";
+
+            foreach ($history_institutefee as $key => $batch) {
+             
+             
+             
+             
+                
+                  echo "<tr>";
+                  echo "<td>";
+                  $paidDate = strtotime($batch->payment_receive->paid_date);
+                  echo date("Y", $paidDate);
+                echo "</td>";
+                    echo "<td>";
+                      echo $batch->pay_month;
+                    echo "</td>";
+                  
+                    echo "<td>";
+                      echo $batch->payment_receive->receipt_number;
+                      // print_r($payment->payment_receive);
+                    echo "</td>";
+                    echo "<td>";
+                      echo $batch->payment_receive->paid_amount;
+                    echo "</td>";
+                    echo "<td>";
+                    echo $batch->payment_receive->paid_date;
+                  echo "</td>";
+                  echo "</tr>";
+            
+           
+            }
+                
+            echo "</table>";
+            echo '</p>';
+            echo '</details>';
+          }
+         
+
           ?>
           <?php 
           if(isset($all_batches)){
             $month_array = ['January','February','March','April','June','July','August','September','Octmber','November','December'];
+            echo '<div class="form-group">';
+            echo '<label>Select payment month</label>';
             echo "<select name='selected-month' class='form-control'>";
           
+            
             foreach ($month_array as $key_course => $month) {
               // print_r($course);
               echo "<option value='{$month}'>";
@@ -115,6 +173,9 @@ if (!($this->session->userdata('user_detail'))) {
               echo "</option>";
             }
             echo "</select>";
+            echo '</div>';
+            echo '<div class="form-group">';
+            echo '<label>Select subjects</label><br>';
             foreach ($all_batches as $key_batch => $batch) {
               // print_r($course);
               $batchid = 20;
@@ -128,6 +189,7 @@ if (!($this->session->userdata('user_detail'))) {
             echo form_checkbox('class-fee',100, FALSE,$js);
               
               echo "<label>" . 'Institute Fee'. " </label>";
+              echo '</div>';
             echo '
             <div class="form-group">
           <label>Total Fee</label>
